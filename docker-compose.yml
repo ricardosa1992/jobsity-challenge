@@ -3,13 +3,30 @@ services:
     build:
       context: .
       dockerfile: src/JobsityChallenge.WebAPI/Dockerfile
+    container_name: WebAPI
     ports:
       - "5001:8080"
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - sqlServer
     networks:
       - jobsity_network
-      
+  sqlServer:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlServer
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    networks:
+      - jobsity_network
 networks:
   jobsity_network:
     driver: bridge
+    
+volumes:
+  mssql_data:
