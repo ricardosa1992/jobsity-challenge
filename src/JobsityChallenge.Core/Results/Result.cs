@@ -1,4 +1,4 @@
-﻿namespace JobsityChallenge.Core.Utilities;
+﻿namespace JobsityChallenge.Core.Results;
 
 public record Result
 {

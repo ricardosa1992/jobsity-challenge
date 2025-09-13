@@ -1,5 +1,6 @@
 using JobsityChallenge.Core.DTOs;
 using JobsityChallenge.Core.Interfaces.Services;
+using JobsityChallenge.Core.Results;
 using JobsityChallenge.Core.Utilities;
 using Microsoft.AspNetCore.Identity;
 

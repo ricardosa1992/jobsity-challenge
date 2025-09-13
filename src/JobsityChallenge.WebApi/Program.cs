@@ -1,5 +1,7 @@
+using JobsityChallenge.Core.Interfaces.Repositories;
 using JobsityChallenge.Core.Interfaces.Services;
 using JobsityChallenge.Core.Services;
+using JobsityChallenge.Infrastructure.Data.Repositories;
 using JobsityChallenge.WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext(builder.Configuration);
 builder.Services.AddIdentity();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IChatService, ChatService>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
 var app = builder.Build();
 

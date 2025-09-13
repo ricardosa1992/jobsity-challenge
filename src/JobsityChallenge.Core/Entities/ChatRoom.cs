@@ -16,4 +16,9 @@ public class ChatRoom
         _messages = [];
         _users = [];
     }
+
+    public ChatRoom(string name) : this()
+    {
+        Name = name;
+    }
 }
