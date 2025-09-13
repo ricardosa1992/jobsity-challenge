@@ -2,6 +2,7 @@ using JobsityChallenge.Core.Interfaces.Repositories;
 using JobsityChallenge.Core.Interfaces.Services;
 using JobsityChallenge.Core.Services;
 using JobsityChallenge.Infrastructure.Data.Repositories;
+using JobsityChallenge.Shared.Hubs;
 using JobsityChallenge.WebApi.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddAuthentication(builder.Configuration);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwagger();
 builder.Services.AddDbContext(builder.Configuration);
+builder.Services.AddSignalR();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IChatService, ChatService>();
@@ -37,6 +39,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<ChatHub>("/chathub");
 app.ApplyDatabaseMigrations();
 
 app.Run();
