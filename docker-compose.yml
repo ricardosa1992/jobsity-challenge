@@ -10,11 +10,23 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
       - sqlServer
+      - rabbitmq
+    networks:
+      - jobsity_network
+  botservice:
+    build:
+      context: .
+      dockerfile: src/JobsityChallenge.BotService/Dockerfile
+    container_name: BotService
+    environment:
+      - RabbitMQ__HostName=rabbitmq
+    depends_on:
+      - rabbitmq
     networks:
       - jobsity_network
   sqlServer:
     image: mcr.microsoft.com/mssql/server:2019-latest
-    container_name: sqlServer
+    container_name: SqlServer
     environment:
       - ACCEPT_EULA=Y
       - MSSQL_SA_PASSWORD=YourStrong!Passw0rd
@@ -22,6 +34,14 @@ services:
       - "1433:1433"
     volumes:
       - mssql_data:/var/opt/mssql
+    networks:
+      - jobsity_network
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: RabbitMq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
     networks:
       - jobsity_network
 networks:

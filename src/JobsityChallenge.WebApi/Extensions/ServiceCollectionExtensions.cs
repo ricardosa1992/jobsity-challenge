@@ -1,5 +1,6 @@
 ﻿using JobsityChallenge.Core.Utilities;
 using JobsityChallenge.Infrastructure.Data;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection AddDbContext(this IServiceCollection services, IConfiguration configuration)
     {
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = configuration.GetConnectionString("SqlServer");
 
         services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(connectionString));
 
@@ -66,7 +67,6 @@ public static class ServiceCollectionExtensions
     {
         services.AddSwaggerGen(c =>
         {
-            // Add JWT Authentication
             c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
             {
                 Name = "Authorization",
@@ -92,6 +92,19 @@ public static class ServiceCollectionExtensions
                 }
             });
          });
+
+        return services;
+    }
+
+    public static IServiceCollection AddMessageBroker(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddMassTransit(x =>
+        {
+            x.UsingRabbitMq((context, cfg) =>
+            {
+                cfg.Host(configuration.GetConnectionString("RabbitMq"));
+            });
+        });
 
         return services;
     }

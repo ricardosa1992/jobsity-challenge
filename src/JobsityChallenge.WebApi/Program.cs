@@ -20,6 +20,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IChatRepository, ChatRepository>();
 
+builder.Services.AddMessageBroker(builder.Configuration);
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

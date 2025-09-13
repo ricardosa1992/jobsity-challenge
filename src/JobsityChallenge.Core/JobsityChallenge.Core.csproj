@@ -7,10 +7,15 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MassTransit" Version="8.5.2" />
     <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.20" />
     <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.35.0" />
     <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.35.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.35.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\JobsityChallenge.Shared\JobsityChallenge.Shared.csproj" />
   </ItemGroup>
 
 </Project>
