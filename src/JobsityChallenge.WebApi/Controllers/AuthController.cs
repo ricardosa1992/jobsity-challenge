@@ -39,7 +39,7 @@ public class AuthController(IAuthService authService) : ControllerBase
 
         var loginResult = await authService.LoginAsync(model);
         if (!loginResult.IsSuccess)
-            return Unauthorized(new { Message = loginResult.Error });
+            return BadRequest(loginResult.Error);
 
         return Ok(new { Token = loginResult.Value });
     }

@@ -29,12 +29,12 @@ public record Result<T> : Result
     public static implicit operator Result<T>(Error error) => new(error);
 }
 
-public enum ErrorType { InvalidUserOrPassword }
+public enum ErrorType { NotFound, Validation }
 
 public record Error(string Id, ErrorType Type, string Description);
-
-// Predefined errors (avoids magic strings)
 public static class Errors
 {
-    public static Error InvalidUserOrPassword { get; } = new("InvalidUserOrPassword", ErrorType.InvalidUserOrPassword, "Invalid user or password ");
+    public static Error InvalidUserOrPassword { get; } = new("InvalidUserOrPassword", ErrorType.Validation, "Invalid user or password");
+    public static Error UserNotFound { get; } = new("UserNotFound", ErrorType.NotFound, "User not found");
+    public static Error ChatRoomNotFound { get; } = new("ChatRoomNotFound", ErrorType.NotFound, "Chat room not found");
 }

@@ -21,4 +21,9 @@ public class ChatRoom
     {
         Name = name;
     }
+
+    public void AddMessage(string content, string userId)
+    {
+        _messages.Add(new ChatMessage(this, content, userId));
+    }
 }

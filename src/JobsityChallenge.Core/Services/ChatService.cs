@@ -1,12 +1,16 @@
 using JobsityChallenge.Core.DTOs;
 using JobsityChallenge.Core.Entities;
 using JobsityChallenge.Core.Interfaces.Repositories;
+using JobsityChallenge.Core.Interfaces.Services;
 using JobsityChallenge.Core.Parameters;
 using JobsityChallenge.Core.Results;
+using Microsoft.AspNetCore.Identity;
 
-namespace JobsityChallenge.Core.Interfaces.Services;
+namespace JobsityChallenge.Core.Services;
 
-public class ChatService(IChatRepository chatRepository) : IChatService
+public class ChatService(
+    IChatRepository chatRepository,
+    UserManager<IdentityUser> userManager) : IChatService
 {
     public async Task<PagedResult<ChatRoomDto>> GetChatRoomsAsync(GetChatRoomsParameters parameters)
     {
@@ -26,5 +30,26 @@ public class ChatService(IChatRepository chatRepository) : IChatService
         var createdRoom = await chatRepository.CreateChatRoomAsync(chatRoom);
 
         return new ChatRoomDto(createdRoom.Id, createdRoom.Name);
+    }
+
+    public async Task<Result> SendMessageAsync(SendMessageDto request)
+    {
+        var user = await userManager.FindByIdAsync(request.UserId!);
+        if (user == null) 
+            return Errors.UserNotFound;
+
+        var chatRoom = await chatRepository.GetChatRoomByIdAsync(request.RoomId);
+        if (chatRoom == null)
+            return Errors.ChatRoomNotFound;
+
+        chatRoom.AddMessage(request.Content, request.UserId!);
+        await chatRepository.SaveChangesAsync();
+
+        return Result.Success();
+    }
+
+    public Task<IEnumerable<GetMessageDto>> GetMessagesAsync(int id)
+    {
+        return chatRepository.GetMessagesAsync(id);
     }
 }

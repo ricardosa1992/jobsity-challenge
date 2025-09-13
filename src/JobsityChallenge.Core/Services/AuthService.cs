@@ -25,6 +25,6 @@ public class AuthService(UserManager<IdentityUser> userManager, JwtTokenGenerato
         if (user == null || !await userManager.CheckPasswordAsync(user, loginDto.Password))
             return Errors.InvalidUserOrPassword;
 
-        return jwtTokenGenerator.GenerateToken(user.UserName!);
+        return jwtTokenGenerator.GenerateToken(user.Id, user.UserName!);
     }
 }

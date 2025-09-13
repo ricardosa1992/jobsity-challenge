@@ -8,7 +8,7 @@ namespace JobsityChallenge.Core.Utilities;
 
 public class JwtTokenGenerator(IConfiguration configuration)
 {
-    public string GenerateToken(string username)
+    public string GenerateToken(string userId, string userName)
     {
         var key = configuration["JwtSettings:Key"];
         var issuer = configuration["JwtSettings:Issuer"];
@@ -24,7 +24,8 @@ public class JwtTokenGenerator(IConfiguration configuration)
 
         var claims = new[]
         {
-            new Claim(JwtRegisteredClaimNames.Sub, username),
+            new Claim(JwtRegisteredClaimNames.Sub, userId),
+            new Claim(JwtRegisteredClaimNames.Name, userName),
             new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 

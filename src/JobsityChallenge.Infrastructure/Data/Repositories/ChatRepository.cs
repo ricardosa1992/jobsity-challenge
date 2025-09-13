@@ -1,4 +1,4 @@
-using Azure.Core;
+using JobsityChallenge.Core.DTOs;
 using JobsityChallenge.Core.Entities;
 using JobsityChallenge.Core.Interfaces.Repositories;
 using JobsityChallenge.Core.Parameters;
@@ -9,9 +9,9 @@ namespace JobsityChallenge.Infrastructure.Data.Repositories;
 
 public class ChatRepository(ApplicationDbContext context) : IChatRepository
 {
-    public Task<ChatRoom?> GetChatRoomByNameAsync(string name)
+    public Task<ChatRoom?> GetChatRoomByIdAsync(int id)
     {
-        return context.ChatRooms.FirstOrDefaultAsync(r => r.Name == name);
+        return context.ChatRooms.FirstOrDefaultAsync(r => r.Id == id);
     }
 
     public async Task<PagedResult<ChatRoom>> GetChatRoomsAsync(GetChatRoomsParameters parameters)
@@ -38,4 +38,16 @@ public class ChatRepository(ApplicationDbContext context) : IChatRepository
         await context.SaveChangesAsync();
         return chatRoom;
     }
+
+    public async Task<IEnumerable<GetMessageDto>> GetMessagesAsync(int chatRoomId)
+    {
+        return await context.ChatMessages
+            .Where(p => p.ChatRoomId == chatRoomId)
+            .OrderBy(cr => cr.Timestamp)
+            .Take(50)
+            .Select(p => new GetMessageDto(p.Id, p.UserId, p.User.UserName!, p.Content, p.Timestamp))
+            .ToListAsync();
+    }
+
+    public Task SaveChangesAsync() => context.SaveChangesAsync();
 }
