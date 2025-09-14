@@ -1,12 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using JobsityChallenge.Core.Interfaces.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 
-namespace JobsityChallenge.Core.Utilities;
+namespace JobsityChallenge.Core.Services;
 
-public class JwtTokenGenerator(IConfiguration configuration)
+public class JwtTokenGenerator(IConfiguration configuration) : IJwtTokenGenerator
 {
     public string GenerateToken(string userId, string userName)
     {

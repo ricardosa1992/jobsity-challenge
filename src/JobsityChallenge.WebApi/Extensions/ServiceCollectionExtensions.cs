@@ -1,4 +1,5 @@
-﻿using JobsityChallenge.Core.Utilities;
+﻿using JobsityChallenge.Core.Interfaces.Services;
+using JobsityChallenge.Core.Services;
 using JobsityChallenge.Infrastructure.Data;
 using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -36,7 +37,7 @@ public static class ServiceCollectionExtensions
         var jwtSettings = configuration.GetSection("JwtSettings");
 
         services
-            .AddSingleton<JwtTokenGenerator>()
+            .AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>()
             .AddAuthentication(options =>
             {
                 options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
