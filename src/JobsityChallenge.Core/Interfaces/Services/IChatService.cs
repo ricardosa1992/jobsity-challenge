@@ -6,8 +6,8 @@ namespace JobsityChallenge.Core.Interfaces.Services;
 
 public interface IChatService
 {
-    Task<PagedResult<ChatRoomDto>> GetChatRoomsAsync(GetChatRoomsParameters parameters);
-    Task<ChatRoomDto> CreateChatRoomAsync(string name);
+    Task<PagedResult<GetChatRoomDto>> GetChatRoomsAsync(GetChatRoomsParameters parameters);
+    Task<GetChatRoomDto> CreateChatRoomAsync(CreateChatRoomDto chatRoomDto);
     Task<Result> SendMessageAsync(SendMessageDto messageDto);
     Task<IEnumerable<GetMessageDto>> GetMessagesAsync(int id);
 }

@@ -10,6 +10,6 @@ public interface IChatRepository
     Task<ChatRoom?> GetChatRoomByIdAsync(int id);
     Task<PagedResult<ChatRoom>> GetChatRoomsAsync(GetChatRoomsParameters parameters);
     Task<ChatRoom> CreateChatRoomAsync(ChatRoom chatRoom);
-    Task<IEnumerable<GetMessageDto>> GetMessagesAsync(int chatRoomId);
+    Task<IEnumerable<GetMessageDto>> GetLastMessagesAsync(int chatRoomId, int count = 50);
     Task SaveChangesAsync();
 }

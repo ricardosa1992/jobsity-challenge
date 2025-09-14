@@ -1,0 +1,155 @@
+﻿@page "/chatrooms"
+@using JobsityChallenge.Client.Models
+@using JobsityChallenge.Client.Services
+@inject ChatService ChatService
+@inject ChatHubService ChatHubService
+
+<h3>Chat Rooms</h3>
+
+<div class="mb-3">
+    <input @bind="newRoomName" placeholder="New chat room" />
+    <button @onclick="CreateRoom">Create</button>
+</div>
+
+<div class="d-flex" style="height: 70vh; border: 1px solid #ccc;">
+    <!-- Left container: chat rooms -->
+    <div style="width: 250px; border-right: 1px solid #ccc; padding: 10px; overflow-y: auto;">
+        @if (rooms is null)
+        {
+            <p>Loading chat rooms...</p>
+        }
+        else if (!rooms.Any())
+        {
+            <p>No chat rooms yet.</p>
+        }
+        else
+        {
+            <ul class="list-unstyled">
+                @foreach (var room in rooms)
+                {
+                    <li class="p-2 @((selectedRoom?.Id == room.Id) ? "bg-light" : "")"
+                        style="cursor:pointer;"
+                        @onclick="() => SelectRoom(room)">
+                        @room.Name
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+
+    <!-- Right container: chat messages -->
+    <div style="flex: 1; padding: 10px; overflow-y: auto;">
+        @if (selectedRoom == null)
+        {
+            <p>Select a chat room to start chatting</p>
+        }
+        else
+        {
+            <h5>@selectedRoom.Name</h5>
+            <div style="height: 500px; overflow-y: auto; border: 1px solid #ccc; padding: 5px;">
+                @if (messages == null || !messages.Any())
+                {
+                    <p>No messages yet.</p>
+                }
+                else
+                {
+                    @foreach (var msg in messages)
+                    {
+                        <div>
+                            <strong>@msg.UserName:</strong> @msg.Content
+                        </div>
+                    }
+                }
+            </div>
+
+            <div class="mt-2 d-flex">
+                <input class="form-control me-2" @bind="newMessageText" placeholder="Type a message..." />
+                <button class="btn btn-primary" @onclick="SendMessage">Send</button>
+            </div>
+        }
+    </div>
+</div>
+
+@code {
+    private List<ChatRoom>? rooms;
+    private ChatRoom? selectedRoom;
+    private List<Message> messages = new();
+    private string newRoomName = "";
+    private string newMessageText = "";
+    private string? previousRoomId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRooms();
+
+        await ChatHubService.StartAsync();
+        ChatHubService.OnMessageReceived += OnMessageReceived;
+    }
+
+    private async Task LoadRooms()
+    {
+        rooms = await ChatService.GetChatRooms();
+    }
+
+    private async Task CreateRoom()
+    {
+        if (string.IsNullOrWhiteSpace(newRoomName))
+            return;
+
+        var room = new ChatRoom { Name = newRoomName };
+        await ChatService.CreateChatRoom(room);
+        newRoomName = "";
+        await LoadRooms();
+    }
+
+    private async void SelectRoom(ChatRoom room)
+    {
+        if (selectedRoom?.Id != room.Id)
+        {
+            if (previousRoomId != null)
+                await ChatHubService.InvokeAsync("LeaveRoom", previousRoomId);
+
+            selectedRoom = room;
+            previousRoomId = room.Id.ToString();
+
+            await ChatHubService.InvokeAsync("JoinRoom", room.Id.ToString());
+
+            messages = await ChatService.GetMessages(room.Id.ToString());
+            StateHasChanged();
+        }
+    }
+
+    private async Task SendMessage()
+    {
+        if (selectedRoom == null || string.IsNullOrWhiteSpace(newMessageText))
+            return;
+
+        var msg = new Message
+            {
+                RoomId = selectedRoom.Id,
+                UserName = "Me", 
+                Content = newMessageText,
+                Timestamp = DateTime.Now
+            };
+
+        await ChatService.SendMessage(selectedRoom.Id.ToString(), msg);
+
+        newMessageText = "";
+    }
+
+    private void OnMessageReceived(string chatRoomId, string user, string content)
+    {
+        if (selectedRoom != null && selectedRoom.Id.ToString() == chatRoomId)
+        {
+            messages.Add(new Message
+                {
+                    RoomId = int.Parse(chatRoomId),
+                    UserName = user,
+                    Content = content,
+                    Timestamp = DateTime.Now
+                });
+
+            InvokeAsync(StateHasChanged);
+        }
+    }
+}

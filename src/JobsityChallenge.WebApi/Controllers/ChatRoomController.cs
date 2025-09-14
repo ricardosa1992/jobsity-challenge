@@ -9,7 +9,7 @@ namespace JobsityChallenge.WebApi.Controllers;
 
 [Authorize]
 [ApiController]
-[Route("[controller]")]
+[Route("api/[controller]")]
 public class ChatRoomController(IChatService chatService) : ControllerBase
 {
     [HttpGet]
@@ -21,9 +21,9 @@ public class ChatRoomController(IChatService chatService) : ControllerBase
     }
 
     [HttpPost]
-    public async Task<IActionResult> CreateChatRoom([FromBody] string name)
+    public async Task<IActionResult> CreateChatRoom([FromBody] CreateChatRoomDto request)
     {
-        var room = await chatService.CreateChatRoomAsync(name);
+        var room = await chatService.CreateChatRoomAsync(request);
 
         return CreatedAtAction(nameof(GetChatRooms), new { id = room.Id }, room);
     }

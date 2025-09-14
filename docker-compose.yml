@@ -13,6 +13,15 @@ services:
       - rabbitmq
     networks:
       - jobsity_network
+  client:
+    build:
+      context: .
+      dockerfile: src/JobsityChallenge.Client/Dockerfile
+    container_name: Client
+    ports:
+      - "5002:80"
+    networks:
+      - jobsity_network
   botservice:
     build:
       context: .

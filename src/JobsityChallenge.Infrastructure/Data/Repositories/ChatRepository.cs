@@ -39,14 +39,16 @@ public class ChatRepository(ApplicationDbContext context) : IChatRepository
         return chatRoom;
     }
 
-    public async Task<IEnumerable<GetMessageDto>> GetMessagesAsync(int chatRoomId)
+    public async Task<IEnumerable<GetMessageDto>> GetLastMessagesAsync(int chatRoomId, int count = 50)
     {
-        return await context.ChatMessages
+        var messages = await context.ChatMessages
             .Where(p => p.ChatRoomId == chatRoomId)
-            .OrderBy(cr => cr.Timestamp)
-            .Take(50)
+            .OrderByDescending(cr => cr.Timestamp)
+            .Take(count)
             .Select(p => new GetMessageDto(p.Id, p.UserId, p.User.UserName!, p.Content, p.Timestamp))
             .ToListAsync();
+
+        return messages.OrderBy(cr => cr.Timestamp);
     }
 
     public Task SaveChangesAsync() => context.SaveChangesAsync();

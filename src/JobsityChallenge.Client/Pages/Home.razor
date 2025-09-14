@@ -1,0 +1,50 @@
+﻿@page "/"
+@using JobsityChallenge.Client.Models
+@using JobsityChallenge.Client.Services
+@inject AuthService AuthService
+@inject NavigationManager NavigationManager
+@inject TokenService TokenService
+
+<PageTitle>Welcome</PageTitle>
+
+<h1>Welcome to ChatApp!</h1>
+
+<button @onclick="() => showRegister = true">Register</button>
+<button @onclick="() => showRegister = false">Login</button>
+
+<hr />
+
+@if (showRegister)
+{
+    <h3>Register</h3>
+    <input @bind="registerUser.UserName" placeholder="Username" />
+    <input @bind="registerUser.Email" placeholder="Email" />
+    <input @bind="registerUser.Password" placeholder="Password" type="password" />
+    <button @onclick="Register">Register</button>
+}
+else
+{
+    <h3>Login</h3>
+    <input @bind="loginUser.UserName" placeholder="Username" />
+    <input @bind="loginUser.Password" placeholder="Password" type="password" />
+    <button @onclick="Login">Login</button>
+}
+
+@code {
+    private bool showRegister = true;
+
+    private User registerUser = new();
+    private LoginRequest loginUser = new();
+
+    private async Task Register()
+    {
+        await AuthService.Register(registerUser);
+        showRegister = false; 
+    }
+
+    private async Task Login()
+    {
+        await AuthService.Login(loginUser);
+        NavigationManager.NavigateTo("/chatrooms"); 
+    }
+}
